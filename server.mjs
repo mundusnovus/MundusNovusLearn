@@ -126,4 +126,10 @@ export function makeLearn(env = process.env, deps = {}) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT) || 8095, { server, lessons } = makeLearn();
   server.listen(port, () => console.log('Mundus Novus Learn on :' + port + ', ' + lessons.size + ' lessons'));
+  // check the runner end to end once at start: compiler, limits, unprivileged user, tests
+  const sample = lessons.get('functions-basics');
+  createRunner({ user: process.env.RUNNER_USER || null }).check(sample, sample.solution)
+    .then((r) => console.log(r.passed ? 'runner ok: a lesson solution compiled, ran and passed its tests'
+      : 'RUNNER PROBLEM: ' + JSON.stringify({ compiled: r.compiled, errors: r.errors, crashed: r.crashed, crash: r.crash, timedOut: r.timedOut, output: r.output, tests: r.tests })))
+    .catch((e) => console.log('RUNNER PROBLEM: ' + e.message));
 }
