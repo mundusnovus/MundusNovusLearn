@@ -11,15 +11,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
 
-const PRELUDE = `#if canImport(Glibc)
-import Glibc
-#elseif canImport(Musl)
-import Musl
-#elseif canImport(Darwin)
+// Output is line-buffered, so what a program printed before a crash still reaches the learner. On Darwin the program
+// does it itself. On Linux, Glibc declares stdout as a mutable global that Swift 6 will not touch, so the runner
+// starts the program under stdbuf -oL instead.
+const PRELUDE = `#if canImport(Darwin)
 import Darwin
-#endif
 setvbuf(stdout, nil, _IOLBF, 0)
+#endif
 `;
+const STDBUF = existsSync('/usr/bin/stdbuf') ? ['/usr/bin/stdbuf', '-oL'] : [];
 const PRELUDE_LINES = PRELUDE.split('\n').length - 1;
 const MAX_OUT = 64 * 1024;
 
@@ -95,7 +95,8 @@ export function createRunner({ swiftc = 'swiftc', user = process.env.RUNNER_USER
         tests.forEach((t, i) => { if (swiftLeft[i] || t.checks.some((x) => x.kind === 'output' || x.kind === 'nooutput')) results[i].pass = false; });
         return { compiled: false, timedOut: c.killed, errors: compilerErrors(c.err, firstLine, testStart), output: '', tests: results, passed: false };
       }
-      const r = await run(join(dir, 'program'), [], { ...opts(runTimeout, 4 * 1024 * 1024 * 1024) });
+      const r = STDBUF.length ? await run(STDBUF[0], [STDBUF[1], join(dir, 'program')], opts(runTimeout, 4 * 1024 * 1024 * 1024))
+        : await run(join(dir, 'program'), [], opts(runTimeout, 4 * 1024 * 1024 * 1024));
       const lines = r.out.split('\n'), shown = [];
       for (const l of lines) {
         const m = new RegExp('^\\u001e' + nonce + ' (\\d+) ([01])$').exec(l);
