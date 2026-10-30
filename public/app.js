@@ -92,15 +92,15 @@
     return mapOf(course).then(function (map) {
       document.title = map.title + ' · Mundus Novus Learn';
       var all = lessonsIn(map), n = all.filter(function (l) { return done(l.id); }).length, next = all.find(function (l) { return !done(l.id); });
-      main.replaceChildren(
+      main.replaceChildren.apply(main, [
         h('section', { class: 'course-head' },
           h('p', { class: 'eyebrow', text: map.versions }),
           h('h1', { class: 'display', text: map.title }),
           h('div', { class: 'lede', html: map.summary }),
           bar(n, all.length),
           h('div', { class: 'actions' }, next ? a('/' + course + '/' + next.id, n ? 'Continue: ' + next.title : 'Start: ' + next.title, 'btn primary') : h('p', { class: 'quiet', text: 'You finished the course. Well done.' }),
-            me ? null : h('a', { class: 'btn', href: signInUrl(), text: 'Sign in to keep your progress' }))),
-        map.chapters.map(function (c, ci) {
+            me ? null : h('a', { class: 'btn', href: signInUrl(), text: 'Sign in to keep your progress' })))
+      ].concat(map.chapters.map(function (c, ci) {
           return h('section', { class: 'chapter', 'aria-labelledby': 'ch' + ci },
             h('div', { class: 'chapter-head' }, h('span', { class: 'chapter-n', text: String(ci + 1).padStart(2, '0') }),
               h('div', {}, h('h2', { id: 'ch' + ci, class: 'display', text: c.title }), h('p', { class: 'quiet', text: c.summary }))),
@@ -113,7 +113,7 @@
                     a('/' + course + '/' + l.id, l.title), h('span', { class: 'kind ' + l.type, text: KIND[l.type] }), h('span', { class: 'mins', text: l.minutes + ' min' }));
                 })) : null);
             }));
-        }));
+        })));
     });
   }
 

@@ -29,6 +29,16 @@ function fences(md) {
   return out;
 }
 
+// Lessons are written with the right answer wherever is easiest; learners see the answers in an order that comes from
+// the question's own text, so it is the same for everyone and on the server, but not always the right one first.
+function shuffled(items, seed) {
+  let h = 2166136261;
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  const out = items.slice();
+  for (let i = out.length - 1; i > 0; i--) { h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0; const j = h % (i + 1); [out[i], out[j]] = [out[j], out[i]]; }
+  return out;
+}
+
 export function parseLesson(text, file = '') {
   const fm = /^---\n([\s\S]*?)\n---\n/.exec(text);
   if (!fm) throw new Error(file + ': missing front matter');
@@ -70,7 +80,7 @@ export function parseLesson(text, file = '') {
         else if (!answers.length) prompt.push(l);
       }
       if (answers.filter((a) => a.correct).length !== 1) throw new Error(file + ': each question needs exactly one right answer: ' + lines[0]);
-      return { question: lines[0].trim(), detail: prompt.join('\n').trim(), answers, why };
+      return { question: lines[0].trim(), detail: prompt.join('\n').trim(), answers: shuffled(answers, lines[0]), why };
     });
   }
   if (lesson.type === 'quiz' && !lesson.questions) throw new Error(file + ': a quiz needs questions');
