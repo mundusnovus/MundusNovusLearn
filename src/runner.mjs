@@ -82,7 +82,11 @@ export function createRunner({ swiftc = 'swiftc', user = process.env.RUNNER_USER
     try {
       writeFileSync(join(dir, 'main.swift'), source);
       if (uid != null) { chownSync(dir, uid, uid); chmodSync(dir, 0o700); chownSync(join(dir, 'main.swift'), uid, uid); }
-      const opts = (timeout, as) => ({ cwd: dir, timeout, user, limits: ['--cpu=' + Math.ceil(timeout / 1000), '--fsize=50000000', '--nproc=256', ...(as ? ['--as=' + as] : [])] });
+      // No process-count limit by default: some container sandboxes (Railway's among them) count processes beyond
+      // this user, so even a generous limit stops the compiler starting. The CPU and time limits, and killing the
+      // whole process group at the deadline, still stop runaway programs. RUNNER_NPROC turns it on where it works.
+      const nproc = process.env.RUNNER_NPROC ? ['--nproc=' + process.env.RUNNER_NPROC] : [];
+      const opts = (timeout, as) => ({ cwd: dir, timeout, user, limits: ['--cpu=' + Math.ceil(timeout / 1000), '--fsize=50000000', ...nproc, ...(as ? ['--as=' + as] : [])] });
       // Swift 6 with the settings Xcode gives a new app project ("approachable concurrency"): code is on the main
       // actor unless it says otherwise, and nonisolated async functions run on their caller's actor
       const c = await run(swiftc, ['-swift-version', '6', '-default-isolation', 'MainActor', '-enable-upcoming-feature', 'NonisolatedNonsendingByDefault',
