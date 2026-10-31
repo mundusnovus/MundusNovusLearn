@@ -5,7 +5,10 @@
 // this server asks Social who it belongs to. Node 24, no packages.
 //
 //   PORT, PUBLIC_URL, DATA_DIR, SOCIAL_URL (https://social.asteria.technology), RUNNER_USER (on the server),
-//   RUNS_PER_HOUR (default 240)
+//   RUNS_PER_HOUR (default 240), APP_RUNS_PER_NETWORK (default 1200)
+//
+// The iPhone and iPad app runs code without an account at /api/app/run. It sends a random id for the install
+// (x-asteria-device); runs are limited per install and per network address, and nothing is kept.
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync, createReadStream, mkdirSync } from 'node:fs';
 import { join, extname, dirname } from 'node:path';
@@ -36,19 +39,23 @@ export function makeLearn(env = process.env, deps = {}) {
   const social = (env.SOCIAL_URL || 'https://social.asteria.technology').replace(/\/+$/, '');
   const runner = deps.runner || createRunner({ user: env.RUNNER_USER || null });
   const perHour = Number(env.RUNS_PER_HOUR) || 240;
+  const perNetwork = Number(env.APP_RUNS_PER_NETWORK) || 1200; // app runs from one address, for a classroom on one network
   const fetchImpl = deps.fetch || fetch;
   const who = new Map(); // cookie -> { user, until }
 
+  // Signed in on the website with the Social cookie, or in our apps with an Asteria API key (Bearer cs_...)
   async function me(req) {
-    const sid = (/(?:^|;\s*)as_social=([a-f0-9]{48})/.exec(req.headers.cookie || '') || [])[1];
-    if (!sid) return null;
-    const hit = who.get(sid);
+    const auth = String(req.headers.authorization || ''), key = /^Bearer (cs_[A-Za-z0-9_-]{20,64})$/.exec(auth)?.[1];
+    const sid = key ? null : (/(?:^|;\s*)as_social=([a-f0-9]{48})/.exec(req.headers.cookie || '') || [])[1];
+    if (!sid && !key) return null;
+    const id = key ? 'key:' + createHash('sha256').update(key).digest('hex') : sid;
+    const hit = who.get(id);
     if (hit && hit.until > Date.now()) return hit.user;
     try {
-      const r = await fetchImpl(social + '/api/me', { headers: { cookie: 'as_social=' + sid } });
+      const r = await fetchImpl(social + '/api/me', { headers: key ? { authorization: 'Bearer ' + key } : { cookie: 'as_social=' + sid } });
       const j = r.ok ? await r.json() : {};
       const user = j.user ? { name: j.user.name, display: j.user.display || j.user.name, avatar: j.user.avatar || null } : null;
-      who.set(sid, { user, until: Date.now() + 60000 });
+      who.set(id, { user, until: Date.now() + 60000 });
       if (who.size > 5000) who.clear();
       return user;
     } catch { return null; }
@@ -109,6 +116,19 @@ export function makeLearn(env = process.env, deps = {}) {
         const result = await runner.check(l, String(b.code ?? ''));
         if (result.passed) complete(u.name, l.id, b.code);
         return json(res, 200, result);
+      }
+      if (path === '/api/app/run' && req.method === 'POST') { // the iPhone and iPad app: no account, nothing kept
+        const device = String(req.headers['x-asteria-device'] || '').toLowerCase();
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(device)) return json(res, 400, { error: 'Update the app to run code.' });
+        const b = await body(req), l = lessons.get(String(b.id || ''));
+        if (!l || !l.tests) return json(res, 404, { error: 'This lesson has no code to check.' });
+        const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+        const hour = Date.now() - 3600000;
+        db.prepare('DELETE FROM runs WHERE at < ?').run(hour);
+        const count = (key) => db.prepare('SELECT count(*) n FROM runs WHERE user = ? AND at > ?').get(key, hour).n;
+        if (count('device:' + device) >= perHour || count('ip:' + ip) >= perNetwork) return json(res, 429, { error: 'That is a lot of runs this hour. Take a short break and try again.' });
+        for (const key of ['device:' + device, 'ip:' + ip]) db.prepare('INSERT INTO runs VALUES (?, ?)').run(key, Date.now());
+        return json(res, 200, await runner.check(l, String(b.code ?? '')));
       }
       if (path.startsWith('/api/')) return json(res, 404, { error: 'Not here.' });
       if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }

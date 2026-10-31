@@ -88,6 +88,27 @@ test('runs are limited per hour', async () => {
   } finally { t.stop(); }
 });
 
+test('the app runs code without an account, limited per install and per network, and keeps nothing', async () => {
+  const t = await start({ RUNS_PER_HOUR: '2', APP_RUNS_PER_NETWORK: '3' });
+  const run = (device, code, id = 'values-constants') => fetch(t.base + '/api/app/run', { method: 'POST',
+    headers: { 'content-type': 'application/json', ...(device ? { 'x-asteria-device': device } : {}) }, body: JSON.stringify({ id, code }) })
+    .then(async (r) => ({ status: r.status, body: await r.json() }));
+  const a = '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d', b = '1a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d';
+  try {
+    assert.equal((await run(null, 'right')).status, 400, 'the app must say which install it is');
+    assert.equal((await run('not-a-uuid', 'right')).status, 400);
+    assert.equal((await run(a, 'right', 'start-quiz')).status, 404, 'quizzes have no code');
+    const right = await run(a, 'right answer');
+    assert.equal(right.status, 200);
+    assert.equal(right.body.passed, true);
+    assert.equal((await run(a, 'wrong')).body.passed, false);
+    assert.equal((await run(a, 'right')).status, 429, 'two runs an hour for this install');
+    assert.equal((await run(b, 'right')).status, 200, 'another install on the same network still runs');
+    assert.equal((await run(b, 'right')).status, 429, 'until the network has had its three');
+    assert.equal(t.app.db.prepare('SELECT count(*) n FROM progress').get().n, 0, 'nothing is kept');
+  } finally { t.stop(); }
+});
+
 test('the runner reports crashes, endless loops and compiler errors in the learner\'s own line numbers', async () => {
   const runner = createRunner({ runTimeout: 3000 });
   const lesson = { tests: [{ text: 'x is 1', checks: [{ kind: 'swift', code: 'expect(x == 1)' }] }] };
