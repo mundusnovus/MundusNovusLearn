@@ -39,7 +39,7 @@ Type names start with a capital letter (`Book`); property and variable names sta
 # --instructions--
 
 1. Define a struct `Song` with three properties: `title` (`String`, constant), `artist` (`String`, constant) and `plays` (`Int`, variable).
-2. Create a variable `song` for `"Freely Given"` by `"Mundus Novus"` with `0` plays.
+2. Create a variable `song` for `"Freely Given"` by `"Asteria Technology"` with `0` plays.
 3. Add `1` to its plays twice.
 
 # --tests--
@@ -54,7 +54,7 @@ expect(s.title == "A" && s.artist == "B" && s.plays == 3)
 `song` should have `2` plays.
 
 ```swift
-expect(song.title == "Freely Given" && song.artist == "Mundus Novus" && song.plays == 2)
+expect(song.title == "Freely Given" && song.artist == "Asteria Technology" && song.plays == 2)
 ```
 
 `title` and `artist` should be constants, and `plays` a variable.
@@ -78,7 +78,7 @@ struct Song {
     var plays: Int
 }
 
-var song = Song(title: "Freely Given", artist: "Mundus Novus", plays: 0)
+var song = Song(title: "Freely Given", artist: "Asteria Technology", plays: 0)
 song.plays += 1
 song.plays += 1
 ```

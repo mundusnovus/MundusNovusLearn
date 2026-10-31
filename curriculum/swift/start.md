@@ -30,7 +30,7 @@ Along the way you will meet a few kinds of lesson:
 
 ## What you need
 
-For the first half, nothing but this page. Sign in with your Mundus Novus account to run code and keep your progress.
+For the first half, nothing but this page. Sign in with your Asteria account to run code and keep your progress.
 
 For the second half you need a Mac with **Xcode 27**, which is free from the Mac App Store. To run your apps on your own iPhone you only need a free Apple Account. To use TestFlight, iCloud, in-app purchases and the App Store, you need the **Apple Developer Program** membership. Chapter 5 explains exactly what it gives you.
 

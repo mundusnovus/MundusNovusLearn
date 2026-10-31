@@ -55,7 +55,7 @@ When it does its core job well, send it to a few friends through TestFlight. Lis
 
 When it is live, you are an app developer. Congratulations, and well done.
 
-> **Tip** Share what you made on **MNSocial**, and tell us what this course could do better. It is open source; you can improve it yourself, at [github.com/mundusnovus/MundusNovusLearn](https://github.com/mundusnovus/MundusNovusLearn).
+> **Tip** Share what you made on **Asteria Social**, and tell us what this course could do better. It is open source; you can improve it yourself, at [github.com/mundusnovus/MundusNovusLearn](https://github.com/mundusnovus/MundusNovusLearn).
 
 # --checklist--
 

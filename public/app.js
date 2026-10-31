@@ -1,9 +1,9 @@
-/* Mundus Novus Learn in the browser. Routes: / (home), /swift/ (the course), /swift/<lesson>.
+/* Asteria Learn in the browser. Routes: / (home), /swift/ (the course), /swift/<lesson>.
    Views are built from DOM nodes; lesson HTML comes from our own build (tools/build.mjs), already escaped. */
 (function () {
   'use strict';
   var main = document.getElementById('main'), me = null, maps = {}, progress = { done: {}, code: {} };
-  var SOCIAL = location.hostname.endsWith('mundusnovus.org') ? 'https://social.mundusnovus.org' : 'https://social.mundusnovus.org';
+  var SOCIAL = location.hostname.endsWith('asteria.technology') ? 'https://social.asteria.technology' : 'https://social.asteria.technology';
   var KIND = { lesson: 'Lesson', workshop: 'Workshop', lab: 'Lab', quiz: 'Quiz', xcode: 'Xcode', project: 'Project' };
 
   // ---------------------------------------------------------------- helpers
@@ -22,8 +22,8 @@
   }
   var toastT; function toast(t) { var e = document.getElementById('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { e.classList.remove('on'); }, 3200); }
   var store = {
-    get: function (k, d) { try { var v = localStorage.getItem('mn.learn.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set: function (k, v) { try { localStorage.setItem('mn.learn.' + k, JSON.stringify(v)); } catch (e) {} }
+    get: function (k, d) { try { var v = localStorage.getItem('as.learn.' + k); if (v == null) v = localStorage.getItem('mn.learn.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; }  // progress saved under the earlier name still counts },
+    set: function (k, v) { try { localStorage.setItem('as.learn.' + k, JSON.stringify(v)); } catch (e) {} }
   };
   function signInUrl() { return SOCIAL + '/signin?return=' + encodeURIComponent(location.href); }
   function go(path, replace) { if (replace) history.replaceState(null, '', path); else history.pushState(null, '', path); route(); }
@@ -62,14 +62,14 @@
 
   // ---------------------------------------------------------------- home
   function home() {
-    document.title = 'Mundus Novus Learn';
+    document.title = 'Asteria Learn';
     return mapOf('swift').then(function (map) {
       var all = lessonsIn(map), n = all.filter(function (l) { return done(l.id); }).length, next = all.find(function (l) { return !done(l.id); }) || all[0];
       main.replaceChildren(
         h('section', { class: 'hero' },
           h('img', { class: 'hero-mark', src: '/brand/learn-mark.svg', alt: '' }),
           h('h1', { class: 'display', text: 'Learn to build anything.' }),
-          h('p', { class: 'lede', text: 'Free, open courses from Mundus Novus. Read, write real code, and check it as you go, in your browser.' })),
+          h('p', { class: 'lede', text: 'Free, open courses from Asteria Technology. Read, write real code, and check it as you go, in your browser.' })),
         h('section', { class: 'courses', 'aria-label': 'Courses' },
           h('article', { class: 'course-card' },
             h('img', { src: '/brand/swift-course.svg', alt: '', class: 'course-art' }),
@@ -83,14 +83,14 @@
         h('section', { class: 'how' },
           h('div', {}, h('h3', { text: 'Write real code' }), h('p', { text: 'Every Swift lesson has an editor. Press Run and the tests tell you exactly what works and what to fix.' })),
           h('div', {}, h('h3', { text: 'Build real apps' }), h('p', { text: 'Then move to Xcode on your Mac and build apps for iPhone, iPad and Mac, step by step.' })),
-          h('div', {}, h('h3', { text: 'Free, for good' }), h('p', {}, 'Every course is open source under the Mundus Novus License. ', h('a', { href: 'https://github.com/mundusnovus/MundusNovusLearn', text: 'Read the source' }), '.'))));
+          h('div', {}, h('h3', { text: 'Free, for good' }), h('p', {}, 'Every course is open source under the Asteria License. ', h('a', { href: 'https://github.com/mundusnovus/MundusNovusLearn', text: 'Read the source' }), '.'))));
     });
   }
 
   // ---------------------------------------------------------------- the course map
   function courseView(course) {
     return mapOf(course).then(function (map) {
-      document.title = map.title + ' · Mundus Novus Learn';
+      document.title = map.title + ' · Asteria Learn';
       var all = lessonsIn(map), n = all.filter(function (l) { return done(l.id); }).length, next = all.find(function (l) { return !done(l.id); });
       main.replaceChildren.apply(main, [
         h('section', { class: 'course-head' },
@@ -201,7 +201,7 @@
     var running = false;
     function run() {
       if (running) return;
-      if (!me) { out.replaceChildren(h('span', {}, 'Sign in with your Mundus Novus account to run your code. ', h('a', { href: signInUrl(), text: 'Sign in' }))); return; }
+      if (!me) { out.replaceChildren(h('span', {}, 'Sign in with your Asteria account to run your code. ', h('a', { href: signInUrl(), text: 'Sign in' }))); return; }
       running = true; runBtn.disabled = true; runBtn.textContent = 'Running…'; out.textContent = 'Compiling and running your code…'; ed.mark([]);
       api('POST', 'run', { id: L.id, code: ed.value() }).then(function (r) {
         var lis = testsList.querySelectorAll('li');

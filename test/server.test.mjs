@@ -17,7 +17,7 @@ async function start(env = {}) {
   const app = makeLearn({ DATA_DIR: mkdtempSync(join(tmpdir(), 'learn-')), SOCIAL_URL: 'https://social.test', ...env }, { fetch: social, runner });
   await new Promise((r) => app.server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + app.server.address().port;
-  const call = (method, path, body, signedIn = true) => fetch(base + path, { method, headers: { ...(signedIn ? { cookie: 'mn_social=' + SID } : {}), ...(body ? { 'content-type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined })
+  const call = (method, path, body, signedIn = true) => fetch(base + path, { method, headers: { ...(signedIn ? { cookie: 'as_social=' + SID } : {}), ...(body ? { 'content-type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined })
     .then(async (r) => ({ status: r.status, body: await r.json().catch(() => null), type: r.headers.get('content-type') }));
   return { app, base, call, asked, runs, stop: () => app.server.close() };
 }
@@ -26,7 +26,7 @@ test('serves the site, the course and lesson pages', async () => {
   const t = await start();
   try {
     const home = await fetch(t.base + '/');
-    assert.match(await home.text(), /Mundus Novus Learn/);
+    assert.match(await home.text(), /Asteria Learn/);
     const map = await (await fetch(t.base + '/course/swift.json')).json();
     assert.ok(map.chapters.length >= 9);
     const lesson = await fetch(t.base + '/swift/values-constants');   // the app's own route falls back to the app
@@ -44,7 +44,7 @@ test('asks Social who is signed in, and only with the Social cookie', async () =
     const me = await t.call('GET', '/api/me');
     assert.equal(me.body.user.name, 'ana');
     assert.equal(t.asked[0].url, 'https://social.test/api/me');
-    assert.equal(t.asked[0].cookie, 'mn_social=' + SID);
+    assert.equal(t.asked[0].cookie, 'as_social=' + SID);
   } finally { t.stop(); }
 });
 

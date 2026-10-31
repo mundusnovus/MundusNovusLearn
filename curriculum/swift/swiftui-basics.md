@@ -76,7 +76,7 @@ minutes: 15
 `Text` shows read-only text. Style it with **modifiers**, methods that return a changed copy of the view:
 
 ```swift
-Text("Mundus Novus")
+Text("Asteria Technology")
     .font(.largeTitle)
     .fontWeight(.bold)
     .foregroundStyle(.blue)
@@ -169,7 +169,7 @@ HStack(spacing: 12) {
     VStack(alignment: .leading) {
         Text("Freely Given")
             .font(.headline)
-        Text("Mundus Novus")
+        Text("Asteria Technology")
             .font(.subheadline)
             .foregroundStyle(.secondary)
     }

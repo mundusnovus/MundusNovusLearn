@@ -1,10 +1,10 @@
-// Mundus Novus Learn: learn.mundusnovus.org. Serves the courses (built into public/ by tools/build.mjs), keeps each
+// Asteria Learn: learn.asteria.technology. Serves the courses (built into public/ by tools/build.mjs), keeps each
 // learner's progress, and runs Swift exercises against their lessons' tests (src/runner.mjs).
 //
-// People sign in with their Mundus Novus account: the Social cookie (mn_social) is set for the whole domain, and
+// People sign in with their Asteria account: the Social cookie (as_social) is set for the whole domain, and
 // this server asks Social who it belongs to. Node 24, no packages.
 //
-//   PORT, PUBLIC_URL, DATA_DIR, SOCIAL_URL (https://social.mundusnovus.org), RUNNER_USER (on the server),
+//   PORT, PUBLIC_URL, DATA_DIR, SOCIAL_URL (https://social.asteria.technology), RUNNER_USER (on the server),
 //   RUNS_PER_HOUR (default 240)
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync, createReadStream, mkdirSync } from 'node:fs';
@@ -33,19 +33,19 @@ export function makeLearn(env = process.env, deps = {}) {
     CREATE TABLE IF NOT EXISTS progress (user TEXT, lesson TEXT, done_at INTEGER, code TEXT, PRIMARY KEY (user, lesson));
     CREATE TABLE IF NOT EXISTS runs (user TEXT, at INTEGER);
     CREATE INDEX IF NOT EXISTS runs_user ON runs (user, at);`);
-  const social = (env.SOCIAL_URL || 'https://social.mundusnovus.org').replace(/\/+$/, '');
+  const social = (env.SOCIAL_URL || 'https://social.asteria.technology').replace(/\/+$/, '');
   const runner = deps.runner || createRunner({ user: env.RUNNER_USER || null });
   const perHour = Number(env.RUNS_PER_HOUR) || 240;
   const fetchImpl = deps.fetch || fetch;
   const who = new Map(); // cookie -> { user, until }
 
   async function me(req) {
-    const sid = (/(?:^|;\s*)mn_social=([a-f0-9]{48})/.exec(req.headers.cookie || '') || [])[1];
+    const sid = (/(?:^|;\s*)as_social=([a-f0-9]{48})/.exec(req.headers.cookie || '') || [])[1];
     if (!sid) return null;
     const hit = who.get(sid);
     if (hit && hit.until > Date.now()) return hit.user;
     try {
-      const r = await fetchImpl(social + '/api/me', { headers: { cookie: 'mn_social=' + sid } });
+      const r = await fetchImpl(social + '/api/me', { headers: { cookie: 'as_social=' + sid } });
       const j = r.ok ? await r.json() : {};
       const user = j.user ? { name: j.user.name, display: j.user.display || j.user.name, avatar: j.user.avatar || null } : null;
       who.set(sid, { user, until: Date.now() + 60000 });
@@ -99,7 +99,7 @@ export function makeLearn(env = process.env, deps = {}) {
         return json(res, 200, { ok: true });
       }
       if (path === '/api/run' && req.method === 'POST') {
-        const u = await me(req); if (!u) return json(res, 401, { error: 'Sign in with your Mundus Novus account to run code.' });
+        const u = await me(req); if (!u) return json(res, 401, { error: 'Sign in with your Asteria account to run code.' });
         const b = await body(req), l = lessons.get(String(b.id || ''));
         if (!l || !l.tests) return json(res, 404, { error: 'This lesson has no code to check.' });
         const hour = Date.now() - 3600000;
@@ -125,7 +125,7 @@ export function makeLearn(env = process.env, deps = {}) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT) || 8095, { server, lessons } = makeLearn();
-  server.listen(port, () => console.log('Mundus Novus Learn on :' + port + ', ' + lessons.size + ' lessons'));
+  server.listen(port, () => console.log('Asteria Learn on :' + port + ', ' + lessons.size + ' lessons'));
   // check the runner end to end once at start: compiler, limits, unprivileged user, tests
   const sample = lessons.get('functions-basics');
   createRunner({ user: process.env.RUNNER_USER || null }).check(sample, sample.solution)

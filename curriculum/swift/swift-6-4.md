@@ -22,7 +22,7 @@ struct Download {
     var hasRetried: Bool { attempts > 0 }
 }
 
-let d = Download(url: "https://mundusnovus.org/a.zip", name: "a.zip")   // works in Swift 6.4
+let d = Download(url: "https://asteria.technology/a.zip", name: "a.zip")   // works in Swift 6.4
 ```
 
 This makes it easy to keep bookkeeping details private without writing an initializer by hand.

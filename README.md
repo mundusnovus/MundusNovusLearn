@@ -1,6 +1,6 @@
-# Mundus Novus Learn
+# Asteria Learn
 
-Free, open courses at **learn.mundusnovus.org**. Tech from the New World, open source and freely given.
+Free, open courses at **learn.asteria.technology**. Good tools, freely given: open source and free.
 
 The first course is **Swift: Zero to Hero**: Swift 6.4 from a first `print` to apps for iPhone, iPad and Mac with
 SwiftUI, shipped through TestFlight and the App Store with the Apple Developer Program. It has nine chapters,
@@ -10,7 +10,7 @@ SwiftUI, shipped through TestFlight and the App Store with the Apple Developer P
   on our server and is checked by tests, the way freeCodeCamp checks JavaScript.
 - **Chapters 5 to 9, Apple apps**, happen in Xcode 27 on your Mac, with checklists and questions.
 
-Sign in with your Mundus Novus account (the one you use on MNSocial) to run code and keep your progress.
+Sign in with your Asteria account (the one you use on Asteria Social) to run code and keep your progress.
 
 ## How it is built
 
@@ -58,5 +58,5 @@ hour (`RUNS_PER_HOUR`). Settings: `PORT`, `DATA_DIR` (a volume, for progress), `
 
 ## License
 
-The Mundus Novus License 1.0 (GPL-3.0); see [LICENSE](LICENSE). Swift, SwiftUI, Xcode and other Apple names are
+The Asteria License 1.0 (GPL-3.0); see [LICENSE](LICENSE). Swift, SwiftUI, Xcode and other Apple names are
 trademarks of Apple Inc. This course is independent and not endorsed by Apple.

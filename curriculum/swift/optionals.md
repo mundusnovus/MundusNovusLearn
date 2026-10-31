@@ -353,7 +353,7 @@ let oops = Int("forty")!   // Fatal error: Unexpectedly found nil
 Every `!` is a promise to Swift that it cannot check. Experienced Swift programmers keep them rare and only use one when a `nil` would mean a bug in their own code, never because of what a user typed or a server sent. Even then, a message makes the crash easier to understand:
 
 ```swift
-guard let url = URL(string: "https://mundusnovus.org") else {
+guard let url = URL(string: "https://asteria.technology") else {
     fatalError("Our own URL is wrong")
 }
 ```

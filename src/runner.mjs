@@ -78,7 +78,7 @@ export function createRunner({ swiftc = 'swiftc', user = process.env.RUNNER_USER
     const nonce = randomBytes(12).toString('hex');
     const { source, firstLine, testStart } = buildProgram(code, tests, nonce);
     await slot();
-    const dir = mkdtempSync(join(tmpdir(), 'mn-run-'));
+    const dir = mkdtempSync(join(tmpdir(), 'as-run-'));
     try {
       writeFileSync(join(dir, 'main.swift'), source);
       if (uid != null) { chownSync(dir, uid, uid); chmodSync(dir, 0o700); chownSync(join(dir, 'main.swift'), uid, uid); }

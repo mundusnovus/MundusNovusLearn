@@ -1,10 +1,10 @@
-// Draws the course art in the Mundus Novus pixel style: public/brand/swift-course.svg, a Mac showing Swift code
+// Draws the course art in the Asteria Technology pixel style: public/brand/swift-course.svg, a Mac showing Swift code
 // beside an iPhone running an app. A 64 × 48 grid of rectangles, like the brand's marks.  node tools/art.mjs
 import { writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const C = { ink: '#0c1222', night: '#131c31', coal: '#1c2742', sea: '#2a62c9', bright: '#4a82e6', deep: '#17449a', gold: '#e9b04b',
+const C = { ink: '#0a1518', night: '#12232a', coal: '#1a3038', sea: '#1c8c9e', bright: '#3bb3c3', deep: '#116674', gold: '#e9b04b',
   light: '#ffd47e', cream: '#f4ecdb', pink: '#ff7ab2', cyan: '#5dd8ff', green: '#67b7a4', grey: '#5a6a8a' };
 const r = [];
 const rect = (x, y, w, h, c) => r.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${C[c]}"/>`);
@@ -31,8 +31,8 @@ rect(49, 13, 6, 1, 'ink');                                        // the island
 for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) rect(47 + col * 4, 16 + row * 4, 3, 3, ['cream', 'gold', 'bright'][(row + col) % 3]);
 rect(47, 29, 10, 6, 'deep'); rect(48, 30, 6, 1, 'cream'); rect(48, 32, 4, 1, 'light');
 rect(49, 36, 6, 1, 'cream');
-// a little gold sun of a mark in the corner, for the New World
-rect(56, 3, 4, 4, 'gold'); rect(57, 2, 2, 6, 'gold'); rect(55, 4, 6, 2, 'gold');
+// a little gold star in the corner, for Asteria
+rect(58, 2, 1, 1, 'light'); rect(57, 3, 3, 1, 'gold'); rect(56, 4, 5, 1, 'gold'); rect(57, 5, 3, 1, 'gold'); rect(58, 6, 1, 1, 'light');  // a diamond spark, not a plus
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48" width="640" height="480" shape-rendering="crispEdges">${r.join('')}</svg>\n`;
 writeFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'brand', 'swift-course.svg'), svg);

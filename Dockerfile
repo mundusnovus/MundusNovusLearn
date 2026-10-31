@@ -1,4 +1,4 @@
-# Mundus Novus Learn: the site, and a Swift runner for the exercises. Swift 6.4 on Ubuntu, with Node 24 added.
+# Asteria Learn: the site, and a Swift runner for the exercises. Swift 6.4 on Ubuntu, with Node 24 added.
 FROM swift:6.4.2-noble@sha256:bca121f6eb59fd80340d1296887b2698ed8f3eb9eca7d80c181f8af769dc7ee0
 
 ARG TARGETARCH
