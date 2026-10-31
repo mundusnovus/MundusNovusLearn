@@ -96,4 +96,54 @@ export function render(md) {
   return out.join('\n');
 }
 
+/** Lesson Markdown as plain data, for apps that draw lessons natively (the Mac app): headings, paragraphs, lists,
+ *  code, notes, quotes, tables and rules. Inline text stays Markdown (bold, italics, code and links). */
+export function blocks(md) {
+  const lines = String(md || '').replace(/\r/g, '').split('\n'), out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) { i++; continue; }
+    let m;
+    if ((m = /^```(\w*)/.exec(line))) {
+      const lang = m[1], body = []; i++;
+      while (i < lines.length && !/^```\s*$/.test(lines[i])) body.push(lines[i++]);
+      i++;
+      out.push({ type: 'code', lang, code: body.join('\n') });
+      continue;
+    }
+    if ((m = /^(#{2,4})\s+(.*)/.exec(line))) { out.push({ type: 'heading', level: m[1].length, text: m[2] }); i++; continue; }
+    if (/^---+\s*$/.test(line)) { out.push({ type: 'rule' }); i++; continue; }
+    if (/^>\s?/.test(line)) {
+      const body = []; while (i < lines.length && /^>\s?/.test(lines[i])) body.push(lines[i++].replace(/^>\s?/, ''));
+      const kind = /^\*\*(Note|Tip|Warning|Apple Developer Program)\*\*\s*/.exec(body[0] || '');
+      if (kind) body[0] = body[0].slice(kind[0].length);
+      out.push({ type: kind ? 'note' : 'quote', kind: kind ? kind[1] : '', blocks: blocks(body.join('\n')) });
+      continue;
+    }
+    if (/^\|.*\|\s*$/.test(line) && /^\|[\s:|-]+\|\s*$/.test(lines[i + 1] || '')) {
+      const row = (l) => l.trim().slice(1, -1).split('|').map((c) => c.trim().replace(/\\\|/g, '|'));
+      const head = row(line); i += 2; const rows = [];
+      while (i < lines.length && /^\|.*\|\s*$/.test(lines[i])) rows.push(row(lines[i++]));
+      out.push({ type: 'table', head, rows });
+      continue;
+    }
+    if (/^\s*([-*]|\d+\.)\s+/.test(line)) {
+      const ordered = /^\s*\d+\./.test(line), items = [];
+      while (i < lines.length && (/^\s*([-*]|\d+\.)\s+/.test(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && items.length))) {
+        if (/^\s*([-*]|\d+\.)\s+/.test(lines[i])) items.push(lines[i].replace(/^\s*([-*]|\d+\.)\s+/, ''));
+        else items[items.length - 1] += ' ' + lines[i].trim();
+        i++;
+      }
+      out.push({ type: 'list', ordered, items });
+      continue;
+    }
+    const para = [];
+    while (i < lines.length && lines[i].trim() && !/^(```|#{2,4}\s|>|\s*([-*]|\d+\.)\s|---+\s*$|\|)/.test(lines[i])) para.push(lines[i++].trim());
+    if (!para.length) para.push(lines[i++].trim());
+    out.push({ type: 'paragraph', text: para.join(' ') });
+  }
+  return out;
+}
+
 export { esc };

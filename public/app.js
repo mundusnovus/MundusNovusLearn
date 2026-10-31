@@ -22,7 +22,8 @@
   }
   var toastT; function toast(t) { var e = document.getElementById('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { e.classList.remove('on'); }, 3200); }
   var store = {
-    get: function (k, d) { try { var v = localStorage.getItem('as.learn.' + k); if (v == null) v = localStorage.getItem('mn.learn.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; }  // progress saved under the earlier name still counts },
+    // progress saved under the earlier name still counts
+    get: function (k, d) { try { var v = localStorage.getItem('as.learn.' + k); if (v == null) v = localStorage.getItem('mn.learn.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set: function (k, v) { try { localStorage.setItem('as.learn.' + k, JSON.stringify(v)); } catch (e) {} }
   };
   function signInUrl() { return SOCIAL + '/signin?return=' + encodeURIComponent(location.href); }
@@ -83,7 +84,10 @@
         h('section', { class: 'how' },
           h('div', {}, h('h3', { text: 'Write real code' }), h('p', { text: 'Every Swift lesson has an editor. Press Run and the tests tell you exactly what works and what to fix.' })),
           h('div', {}, h('h3', { text: 'Build real apps' }), h('p', { text: 'Then move to Xcode on your Mac and build apps for iPhone, iPad and Mac, step by step.' })),
-          h('div', {}, h('h3', { text: 'Free, for good' }), h('p', {}, 'Every course is open source under the Asteria License. ', h('a', { href: 'https://github.com/mundusnovus/MundusNovusLearn', text: 'Read the source' }), '.'))));
+          h('div', {}, h('h3', { text: 'Free, for good' }), h('p', {}, 'Every course is open source under the Asteria License. ', h('a', { href: 'https://github.com/mundusnovus/MundusNovusLearn', text: 'Read the source' }), '.'))),
+        h('section', { class: 'pad' },
+          h('div', { class: 'note' }, h('p', {}, h('b', { text: 'Swift: Zero to Hero for Mac. ' }), 'The whole course as a Mac app, with the compiler on your own Mac. ', h('a', { href: '/mac/', text: 'Download it' }), '.')),
+          h('p', { class: 'quiet' }, h('a', { href: '/privacy/', text: 'Privacy' }))));
     });
   }
 
