@@ -10,6 +10,7 @@
 // The iPhone and iPad app runs code without an account at /api/app/run. It sends a random id for the install
 // (x-asteria-device); runs are limited per install and per network address, and nothing is kept.
 import { createServer } from 'node:http';
+import { createHash } from 'node:crypto';
 import { readFileSync, existsSync, statSync, createReadStream, mkdirSync } from 'node:fs';
 import { join, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
