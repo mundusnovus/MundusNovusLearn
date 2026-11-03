@@ -63,14 +63,14 @@
 
   // ---------------------------------------------------------------- home
   function home() {
-    document.title = 'Asteria Learn';
+    document.title = 'Asteria Learn — Swift and the apps';
     return mapOf('swift').then(function (map) {
       var all = lessonsIn(map), n = all.filter(function (l) { return done(l.id); }).length, next = all.find(function (l) { return !done(l.id); }) || all[0];
       main.replaceChildren(
         h('section', { class: 'hero' },
           h('img', { class: 'hero-mark', src: '/brand/learn-mark.svg', alt: '' }),
           h('h1', { class: 'display', text: 'Learn to build anything.' }),
-          h('p', { class: 'lede', text: 'Free, open courses from Asteria Technology. Read, write real code, and check it as you go, in your browser.' })),
+          h('p', { class: 'lede', text: 'Free, open courses from Asteria Technology. Start with the free Swift web course, write real code in the browser, then meet the 2.0 app for iPhone, iPad and Mac.' })),
         h('section', { class: 'courses', 'aria-label': 'Courses' },
           h('article', { class: 'course-card' },
             h('img', { src: '/brand/swift-course.svg', alt: '', class: 'course-art' }),
@@ -79,15 +79,25 @@
               h('h2', { class: 'display', text: map.title }),
               h('p', { text: map.subtitle }),
               bar(n, all.length),
-              h('p', { class: 'quiet', text: n ? n + ' of ' + all.length + ' lessons done' : all.length + ' lessons · nine chapters · free' }),
+              h('p', { class: 'quiet', text: n ? n + ' of ' + all.length + ' lessons done' : all.length + ' lessons · ' + map.chapters.length + ' chapters · free' }),
               h('div', { class: 'actions' }, a('/swift/' + next.id, n ? 'Continue: ' + next.title : 'Start the course', 'btn primary'), a('/swift/', 'See every lesson', 'btn'))))),
         h('section', { class: 'how' },
-          h('div', {}, h('h3', { text: 'Write real code' }), h('p', { text: 'Every Swift lesson has an editor. Press Run and the tests tell you exactly what works and what to fix.' })),
-          h('div', {}, h('h3', { text: 'Build real apps' }), h('p', { text: 'Then move to Xcode on your Mac and build apps for iPhone, iPad and Mac, step by step.' })),
-          h('div', {}, h('h3', { text: 'Free, for good' }), h('p', {}, 'Every course is open source under the Asteria License. ', h('a', { href: 'https://github.com/mundusnovus/MundusNovusLearn', text: 'Read the source' }), '.'))),
+          h('div', {}, h('h3', { text: 'Write real code' }), h('p', { text: 'Every Swift lesson has an editor. Press Run and the tests tell you exactly what works and what to fix. The compiler is not impressed by effort; it is impressed by passing tests.' })),
+          h('div', {}, h('h3', { text: 'Build real apps' }), h('p', { text: 'Then move to Xcode and build native apps for iPhone, iPad, Mac and Watch. The apps on asteria.technology use the same Swift, SwiftUI, SwiftData, App Intents and CloudKit you learn here.' })),
+          h('div', {}, h('h3', { text: 'Free, for good' }), h('p', {}, 'The course is open source under the Asteria License. The apps it teaches are proprietary, because someone has to pay for the coffee. ', h('a', { href: 'https://github.com/mundusnovus/MNLearn', text: 'Read the source' }), '.'))),
+        h('section', { class: 'apps' },
+          h('div', { class: 'apps-head' }, h('p', { class: 'eyebrow', text: 'Built with this course' }), h('h2', { class: 'display', text: 'The apps' }), h('p', { class: 'lede', text: 'Six native apps and a free course, all built on the same Swift stack. The course is the tutorial. These are the homework.' })),
+          h('div', { class: 'app-grid' },
+            h('a', { class: 'app-card', href: 'https://asteria.technology/browse/' }, h('img', { src: '/brand/apps/browse.png', alt: '' }), h('div', {}, h('h3', { text: 'Asteria Browse' }), h('p', { text: 'Spaces, private tabs and Asteria Search with on-device Apple Intelligence.' }), h('span', { class: 'app-meta', text: 'Mac · iPhone · iPad' }))),
+            h('a', { class: 'app-card', href: 'https://asteria.technology/keys/' }, h('img', { src: '/brand/apps/keys.png', alt: '' }), h('div', {}, h('h3', { text: 'Asteria Keys' }), h('p', { text: 'An encrypted vault with passkeys, AutoFill and ciphertext-only iCloud sync.' }), h('span', { class: 'app-meta', text: 'Mac · iPhone · iPad' }))),
+            h('a', { class: 'app-card', href: 'https://asteria.technology/timeclock/' }, h('img', { src: '/brand/apps/timeclock.png', alt: '' }), h('div', {}, h('h3', { text: 'Asteria Timeclock' }), h('p', { text: 'Punch in, break, clock out, and export a timesheet that looks deliberate.' }), h('span', { class: 'app-meta', text: 'Mac · iPhone · iPad · Watch' }))),
+            h('a', { class: 'app-card', href: 'https://asteria.technology/foodandmood/' }, h('img', { src: '/brand/apps/foodandmood.png', alt: '' }), h('div', {}, h('h3', { text: 'Food and Mood' }), h('p', { text: 'The six-column journal, filled in by Apple Intelligence after you approve it.' }), h('span', { class: 'app-meta', text: 'iPhone' }))),
+            h('a', { class: 'app-card', href: 'https://asteria.technology/swift/' }, h('img', { src: '/brand/apps/zerotohero.png', alt: '' }), h('div', {}, h('h3', { text: 'Swift: Zero to Hero' }), h('p', { text: 'This course, in an app, with an on-device engine and a coach that will not give you the answer.' }), h('span', { class: 'app-meta', text: 'Mac · iPhone · iPad' }))),
+            h('a', { class: 'app-card', href: 'https://asteria.technology/box-swift/' }, h('img', { src: '/brand/apps/box.png', alt: '' }), h('div', {}, h('h3', { text: 'Asteria Box' }), h('p', { text: 'A native music maker with Foundation Models, patterns and Siri in the audio domain.' }), h('span', { class: 'app-meta', text: 'In development' }))))),
         h('section', { class: 'pad' },
-          h('div', { class: 'note' }, h('p', {}, h('b', { text: 'Swift: Zero to Hero for Mac. ' }), 'The whole course as a Mac app, with the compiler on your own Mac. ', h('a', { href: '/mac/', text: 'Download it' }), '.')),
-          h('p', { class: 'quiet' }, h('a', { href: '/privacy/', text: 'Privacy' }))));
+          h('div', { class: 'note' }, h('p', {}, h('b', { text: 'Swift: Zero to Hero 2.0 is coming to the App Store. ' }), 'The whole course for iPhone, iPad and Mac, with on-device checking, an AI coach and iCloud progress. The web course is free and open now. ', h('a', { href: '/mac/', text: 'See the Mac app' }), '.')),
+          h('p', { class: 'quiet' }, h('a', { href: '/privacy/', text: 'Privacy' })))
+      );
     });
   }
 
